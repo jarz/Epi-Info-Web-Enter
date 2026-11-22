@@ -19,6 +19,7 @@ The project orginally started on Codeplex: https://ewe.codeplex.com/
 It was migrated to Github on August 21, 2017. 
 The repository can be cloned to your machine and opened in Visual Studio. It should be 
 able to compile after restoring nuget package and .NET and ASP.NET MVC dependencies.
+In the multi-repository Epi Info workspace, see [the workspace build instructions](https://github.com/jarz/Epi-Info-Workspace/blob/main/BUILDING.md) for the verified Windows MSBuild command and private .NET Framework 4.5.1 reference assemblies. DynamicForms and the web application now use their check-code/Common source projects rather than configuration-specific or stale application DLLs. Compilation alone does not validate hosting or database/service connectivity.
 The database for the project can be found in Epi Info Web Database repository:
 https://github.com/Epi-Info/Epi-Info-Database-Web
 
