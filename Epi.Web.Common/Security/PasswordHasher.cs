@@ -18,7 +18,6 @@ namespace Epi.Web.Enter.Common.Security
         /// <summary>
         /// For added security the salt for the password hash is created with salt also  
         /// </summary>
-        //  private const string SALT_FOR_SALT = "74$5^&75x%$%771";
         private string SALT_FOR_SALT;
 
 

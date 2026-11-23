@@ -85,6 +85,12 @@
     <Compile Include="Fakes\FakeHttpContext.cs" />
     <Compile Include="Fakes\FakeSurveyFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\AdminKeyTests.cs" />
+    <Compile Include="Security\FormerPublicValues.cs" />
+    <Compile Include="Security\KeyMaterialTests.cs" />
+    <Compile Include="Security\KeyRotationTests.cs" />
+    <Compile Include="Security\PasswordSaltTests.cs" />
+    <Compile Include="Security\UserSignInTests.cs" />
     <Compile Include="Utility\FormProviderTests.cs" />
     <Compile Include="Utility\SurveyHelperTests.cs" />
   </ItemGroup>
@@ -100,6 +106,18 @@
     <ProjectReference Include="..\Epi.Web.Common\Epi.Web.Common.csproj">
       <Project>{6E2F059B-C1CD-401F-8A63-DC2933CFB0D8}</Project>
       <Name>Epi.Web.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EIWS_BLL_Core\Epi.Web.BLL.csproj">
+      <Project>{D49B7A21-644B-49D7-9A5D-387BF31EAFE5}</Project>
+      <Name>Epi.Web.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Epi.Web.Interfaces\Epi.Web.Interfaces.csproj">
+      <Project>{B8AF69BD-3CE1-4AA5-875D-3FB87C7FCE44}</Project>
+      <Name>Epi.Web.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Epi.Web.KeyRotation\Epi.Web.KeyRotation.csproj">
+      <Project>{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}</Project>
+      <Name>Epi.Web.KeyRotation</Name>
     </ProjectReference>
     <ProjectReference Include="..\Epi.Web\Epi.Web.csproj">
       <Project>{91794FFF-48C0-414F-933E-34412A29EEAC}</Project>

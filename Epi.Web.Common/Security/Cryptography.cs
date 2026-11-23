@@ -1,76 +1,77 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography;
-using System.IO;
+using System.Collections.Specialized;
 using System.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Epi.Web.Enter.Common.Security
 {
     /// <summary>
-    /// This class contains two static methods one to entrypt string and one to decrypt string
+    /// Encrypts and decrypts connection strings, organization keys, session user ids and the admin key with
+    /// deployment-specific key material from appSettings. There is no built-in fallback.
     /// </summary>
     public class Cryptography
     {
-        /// <summary>
-        /// Identifier for Web driver that is built into Epi Info
-        /// </summary>
+        // PublicationOnly doesn't cache configuration exceptions, so a corrected configuration is picked up.
+        private static readonly Lazy<KeyMaterial> ConfiguredKeys = new Lazy<KeyMaterial>(
+            () => KeyMaterial.FromSettings(ConfigurationManager.AppSettings),
+            System.Threading.LazyThreadSafetyMode.PublicationOnly);
 
-
-        public static readonly string passPhrase = ConfigurationManager.AppSettings["KeyForConnectionStringPassphrase"]; //"80787d6053694493be171dd712e51c61";
-        public static readonly string saltValue = ConfigurationManager.AppSettings["KeyForConnectionStringSalt"]; //;"476ba16073764022bc7f262c6d67ebef";
-        public static readonly string initVector = ConfigurationManager.AppSettings["KeyForConnectionStringVector"];// "0f8f*d5bd&cb4~9f";
-
-        /// <summary>
-        /// Encryption
-        /// </summary>
-        /// <param name="plainText">The plaintext to encrypt</param>
-        /// <returns>The ciphertext</returns>
-        public static string Encrypt(string plainText)
+        public static KeyMaterial ConfiguredKeyMaterial
         {
-            byte[] initVectorBytes = Encoding.ASCII.GetBytes(initVector);
-            byte[] saltValueBytes = Encoding.ASCII.GetBytes(saltValue);
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, saltValueBytes, "MD5", 1);
-            byte[] keyBytes = password.GetBytes(16);
-            RijndaelManaged symmetricKey = new RijndaelManaged();
-            symmetricKey.Mode = CipherMode.CBC;
-            ICryptoTransform encryptor = symmetricKey.CreateEncryptor(keyBytes, initVectorBytes);
-            MemoryStream memoryStream = new MemoryStream();
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-            cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-            cryptoStream.FlushFinalBlock();
-            byte[] cipherTextBytes = memoryStream.ToArray();
-            memoryStream.Close();
-            cryptoStream.Close();
-            string cipherText = Convert.ToBase64String(cipherTextBytes);
-            return cipherText;
+            get { return ConfiguredKeys.Value; }
         }
 
         /// <summary>
-        /// Decryption
+        /// Fails fast when key material is missing or publicly known, when an AdminKey is configured but invalid,
+        /// or when a configured password salt is unusable or publicly known.
         /// </summary>
-        /// <param name="cipherText">The ciphertext to decrypt</param>
-        /// <returns>The plaintext</returns>
+        public static void ValidateConfiguration()
+        {
+            ValidateConfiguration(ConfigurationManager.AppSettings);
+        }
+
+        public static void ValidateConfiguration(NameValueCollection settings)
+        {
+            KeyMaterial keys = KeyMaterial.FromSettings(settings);
+            AdminKey.Read(settings, keys);
+            PasswordSalt.ValidateConfiguration(settings);
+        }
+
+        public static string Encrypt(string plainText)
+        {
+            return Encrypt(plainText, ConfiguredKeys.Value);
+        }
+
         public static string Decrypt(string cipherText)
         {
-            byte[] initVectorBytes = Encoding.ASCII.GetBytes(initVector);
-            byte[] saltValueBytes = Encoding.ASCII.GetBytes(saltValue);
+            return Decrypt(cipherText, ConfiguredKeys.Value);
+        }
+
+        public static string Encrypt(string plainText, KeyMaterial keys)
+        {
+            if (plainText == null) throw new ArgumentNullException(nameof(plainText));
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+
+            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            using (var symmetricKey = new RijndaelManaged { Mode = CipherMode.CBC })
+            using (ICryptoTransform encryptor = symmetricKey.CreateEncryptor(keys.DeriveKey(), keys.VectorBytes()))
+            {
+                return Convert.ToBase64String(encryptor.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length));
+            }
+        }
+
+        public static string Decrypt(string cipherText, KeyMaterial keys)
+        {
+            if (cipherText == null) throw new ArgumentNullException(nameof(cipherText));
+            if (keys == null) throw new ArgumentNullException(nameof(keys));
+
             byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
-            PasswordDeriveBytes password = new PasswordDeriveBytes(passPhrase, saltValueBytes, "MD5", 1);
-            byte[] keyBytes = password.GetBytes(16);
-            RijndaelManaged symmetricKey = new RijndaelManaged();
-            symmetricKey.Mode = CipherMode.CBC;
-            ICryptoTransform decryptor = symmetricKey.CreateDecryptor(keyBytes, initVectorBytes);
-            MemoryStream memoryStream = new MemoryStream(cipherTextBytes);
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
-            int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-            memoryStream.Close();
-            cryptoStream.Close();
-            string plainText = Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
-            return plainText;
+            using (var symmetricKey = new RijndaelManaged { Mode = CipherMode.CBC })
+            using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(keys.DeriveKey(), keys.VectorBytes()))
+            {
+                return Encoding.UTF8.GetString(decryptor.TransformFinalBlock(cipherTextBytes, 0, cipherTextBytes.Length));
+            }
         }
     }
 }

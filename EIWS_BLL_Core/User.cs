@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using Epi.Web.Enter.Interfaces.DataInterface;
@@ -14,22 +15,32 @@ namespace Epi.Web.BLL
     public class User
     {
         public IUserDao UserDao;
+        private readonly NameValueCollection Settings;
 
         public User(IUserDao pUserDao)
+            : this(pUserDao, ConfigurationManager.AppSettings)
+        {
+        }
+
+        public User(IUserDao pUserDao, NameValueCollection settings)
         {
             UserDao = pUserDao;
+            Settings = settings;
         }
 
         public UserBO GetUser(UserBO User)
         {
             UserBO UserResponseBO;
-            string KeyForUserPasswordSalt = ReadSalt();
-            PasswordHasher PasswordHasher = new Web.Enter.Common.Security.PasswordHasher(KeyForUserPasswordSalt);
-            string salt = PasswordHasher.CreateSalt(User.UserName);
-
-            User.PasswordHash = PasswordHasher.HashPassword(salt, User.PasswordHash);
+            string password = User.PasswordHash;
+            string currentHash = HashPassword(ReadSalt(), User.UserName, password);
+            User.PasswordHash = currentHash;
 
             UserResponseBO = UserDao.GetUser(User);
+            if (UserResponseBO == null)
+            {
+                UserResponseBO = GetUserWithLegacySalt(User, password, currentHash);
+            }
+
 			if (UserResponseBO != null)
 			{
 				UserResponseBO.UserHighestRole = UserDao.GetUserHighestRole(UserResponseBO.UserId);
@@ -69,7 +80,41 @@ namespace Epi.Web.BLL
 
         private string ReadSalt()
         {
-            return ConfigurationManager.AppSettings["KeyForUserPasswordSalt"];
+            return PasswordSalt.ReadCurrent(Settings);
+        }
+
+        private static string HashPassword(string saltForSalt, string userName, string password)
+        {
+            PasswordHasher PasswordHasher = new Web.Enter.Common.Security.PasswordHasher(saltForSalt);
+            return PasswordHasher.HashPassword(PasswordHasher.CreateSalt(userName), password);
+        }
+
+        /// <summary>
+        /// Signs in a user whose hash still uses LegacyKeyForUserPasswordSalt and re-hashes it with the current salt.
+        /// </summary>
+        private UserBO GetUserWithLegacySalt(UserBO User, string password, string currentHash)
+        {
+            string legacySalt = PasswordSalt.ReadLegacy(Settings);
+            if (legacySalt == null)
+            {
+                return null;
+            }
+
+            User.PasswordHash = HashPassword(legacySalt, User.UserName, password);
+            UserBO UserResponseBO = UserDao.GetUser(User);
+            User.PasswordHash = currentHash;
+            if (UserResponseBO != null)
+            {
+                // A failed update leaves the legacy hash in place; the next sign-in tries again.
+                UserDao.UpdateUserPassword(new UserBO
+                {
+                    UserName = UserResponseBO.UserName,
+                    PasswordHash = currentHash,
+                    ResetPassword = UserResponseBO.ResetPassword
+                });
+            }
+
+            return UserResponseBO;
         }
 
         public UserBO GetUserByUserId(UserBO User)

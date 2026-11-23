@@ -100,7 +100,7 @@ namespace Epi.Web.BLL
             }
             else
             {
-                string KeyForUserPasswordSalt = ConfigurationManager.AppSettings["KeyForUserPasswordSalt"];
+                string KeyForUserPasswordSalt = PasswordSalt.ReadCurrent(ConfigurationManager.AppSettings);
                 PasswordHasher PasswordHasher = new Web.Enter.Common.Security.PasswordHasher(KeyForUserPasswordSalt);
                 string salt = PasswordHasher.CreateSalt(UserBO.EmailAddress);
                 UserBO.ResetPassword = true;

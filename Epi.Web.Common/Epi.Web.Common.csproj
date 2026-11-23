@@ -162,10 +162,14 @@
     <Compile Include="Message\UserResponse.cs" />
     <Compile Include="ObjectMapping\Mapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\AdminKey.cs" />
     <Compile Include="Security\Cryptography.cs" />
+    <Compile Include="Security\KeyMaterial.cs" />
+    <Compile Include="Security\KnownPublicValues.cs" />
     <Compile Include="Security\PasswordGenerator.cs" />
     <Compile Include="Email\EmailHandler.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Security\PasswordSalt.cs" />
     <Compile Include="Xml\SurveyResponseXML.cs" />
   </ItemGroup>
   <ItemGroup />

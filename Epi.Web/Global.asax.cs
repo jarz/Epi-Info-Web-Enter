@@ -20,6 +20,7 @@ namespace Epi.Web.MVC
 
         protected void Application_Start()
         {
+			Epi.Web.Enter.Common.Security.Cryptography.ValidateConfiguration();
 			AreaRegistration.RegisterAllAreas();
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

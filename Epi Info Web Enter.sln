@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epi.Web.WCF.SurveyHost", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epi.Web.CheckCodeEngine", "Epi.Web.CheckCodeEngine\Epi.Web.CheckCodeEngine.csproj", "{6B084882-EF4F-4CF0-85B1-1E8C357AE822}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Epi.Web.KeyRotation", "Epi.Web.KeyRotation\Epi.Web.KeyRotation.csproj", "{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{13F1AF55-209F-4F63-A9EC-104FB688602D}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -206,6 +208,16 @@ Global
 		{6B084882-EF4F-4CF0-85B1-1E8C357AE822}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6B084882-EF4F-4CF0-85B1-1E8C357AE822}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6B084882-EF4F-4CF0-85B1-1E8C357AE822}.Release|x86.ActiveCfg = Release|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CF9E9B50-5C3E-47DC-888C-26BE82C50B20}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
