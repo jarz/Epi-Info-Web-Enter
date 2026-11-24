@@ -245,6 +245,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="AuthenticatedEWEDataServiceClient.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Constants\Constant.cs" />
     <Compile Include="Controllers\AdminOrganizationController.cs" />

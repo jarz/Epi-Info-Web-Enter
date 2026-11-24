@@ -18,6 +18,16 @@ This console tool creates deployment key material and moves an existing deployme
 | `KeyForUserPasswordSalt` | Required wherever users sign in with a password. At least 8 bytes; every configuration that shares the database must use the same value. |
 | `LegacyKeyForUserPasswordSalt` | Only during a password-salt migration: the previous salt. Users whose hash still uses it are re-hashed with `KeyForUserPasswordSalt` when they sign in. |
 
+## WCF data service authentication
+
+The `EWEDataService` endpoint requires a 64-character hexadecimal `DataServiceSharedKey` SOAP header on every
+request and accepts requests only over HTTPS. Generate a different random 32-byte key for each deployment,
+then configure the same value in the `Epi.Web` caller and the WCF host. Store both configuration values in
+deployment-protected configuration or a secret store; never commit them. In external-service mode,
+`ENDPOINT_USED` must name the HTTPS endpoint. The in-process integrated mode does not use this SOAP credential.
+The publish-host `Web.config` intentionally leaves the key empty, so the endpoint denies requests until it is
+configured. HTTP metadata and detailed WCF faults are disabled for the publish host.
+
 ## New deployment
 
 ```powershell

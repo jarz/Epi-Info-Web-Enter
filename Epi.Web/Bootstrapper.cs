@@ -57,9 +57,12 @@ namespace Epi.Web.MVC
             }
             else
             {
-                container.RegisterType<Epi.Web.MVC.DataServiceClient.IEWEDataService, Epi.Web.MVC.DataServiceClient.EWEDataServiceClient>()
+                container.RegisterType<Epi.Web.MVC.DataServiceClient.IEWEDataService, Epi.Web.MVC.DataServiceClient.AuthenticatedEWEDataServiceClient>()
                 .Configure<InjectedMembers>()
-                .ConfigureInjectionFor<Epi.Web.MVC.DataServiceClient.EWEDataServiceClient>(new InjectionConstructor(ConfigurationManager.AppSettings["ENDPOINT_USED"]));
+                .ConfigureInjectionFor<Epi.Web.MVC.DataServiceClient.AuthenticatedEWEDataServiceClient>(
+                    new InjectionConstructor(
+                        ConfigurationManager.AppSettings["ENDPOINT_USED"],
+                        ConfigurationManager.AppSettings[Epi.Web.WCF.SurveyService.DataServiceAuthentication.SharedKeySetting]));
                 container.RegisterType<Epi.Web.MVC.Repositories.Core.ISurveyInfoRepository, Epi.Web.MVC.Repositories.SurveyInfoRepository>();
                 container.RegisterType<Epi.Web.MVC.Repositories.Core.IReportRepository, Epi.Web.MVC.Repositories.ReportInfoRepository>();
             }

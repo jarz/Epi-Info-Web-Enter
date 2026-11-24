@@ -16,6 +16,7 @@ using Epi.Web.Enter.Interfaces.DataInterface;
 using System.Configuration;
 namespace Epi.Web.WCF.SurveyService
 {
+    [DataServiceAuthorization]
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class EWEDataService : IEWEDataService
     {

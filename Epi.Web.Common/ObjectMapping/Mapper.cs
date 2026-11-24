@@ -408,7 +408,6 @@ namespace Epi.Web.Enter.Common.ObjectMapping
                 UserName = result.UserName,
                 FirstName = result.FirstName,
                 LastName = result.LastName,
-                PasswordHash = result.PasswordHash,
                 PhoneNumber = result.PhoneNumber,
                 ResetPassword = result.ResetPassword,
                 Role = result.Role,
