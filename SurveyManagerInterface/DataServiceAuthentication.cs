@@ -4,7 +4,6 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using System.Web;
 
 namespace Epi.Web.WCF.SurveyService
 {
@@ -88,8 +87,12 @@ namespace Epi.Web.WCF.SurveyService
                     presentedKey = request.Headers.GetHeader<string>(headerIndex);
                 }
 
-                HttpContext context = HttpContext.Current;
-                bool secureTransport = context != null && context.Request.IsSecureConnection;
+                OperationContext operation = OperationContext.Current;
+                Uri requestUri = operation == null || operation.Channel == null || operation.Channel.LocalAddress == null
+                    ? null
+                    : operation.Channel.LocalAddress.Uri;
+                bool secureTransport = requestUri != null &&
+                    string.Equals(requestUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
                 string configuredKey = ConfigurationManager.AppSettings[DataServiceAuthentication.SharedKeySetting];
                 if (!DataServiceAuthentication.IsAuthorized(configuredKey, presentedKey, secureTransport))
                 {
